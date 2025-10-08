@@ -1,5 +1,4 @@
-'use client';
-
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from '@/components/ui/button';
@@ -12,11 +11,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useTheme } from 'next-themes';
 import {
   Copy,
   Download,
-  Moon,
   MoonStar,
   PlusIcon,
   MinusIcon,
@@ -26,9 +23,12 @@ import {
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
+
+export const Route = createFileRoute('/')({
+  component: Home,
+});
 
 interface Snippet {
   _id: Id<'snippets'>;
@@ -62,8 +62,7 @@ const extMap: Record<string, string> = {
   text: 'txt',
 };
 
-export default function Home() {
-  const { theme } = useTheme();
+function Home() {
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState('text');
   const [content, setContent] = useState('');
@@ -116,7 +115,7 @@ export default function Home() {
             className='flex w-full items-center justify-between p-4 cursor-pointer hover:bg-foreground/5 transition-colors'
           >
             <span className='flex items-center gap-2'>
-              <Moon className='size-5' />
+              <MoonStar className='size-5' />
               New Klip
             </span>
             {showNew ? <MinusIcon className='size-4' /> : <PlusIcon className='size-4' />}
@@ -201,7 +200,8 @@ export default function Home() {
                 onClick={() => setExpandedId(expandedId === snip._id ? null : snip._id)}
               >
                 <Link
-                  href={`/${snip.slug}`}
+                  to="/$slug"
+                  params={{ slug: snip.slug }}
                   className='font-medium'
                   onClick={(e) => e.stopPropagation()}
                 >

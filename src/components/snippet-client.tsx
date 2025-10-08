@@ -1,11 +1,9 @@
-"use client";
-
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { Copy, Download, Share2 } from "lucide-react";
-import { useTheme } from "next-themes";
 import ReactMarkdown from "react-markdown";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useTheme } from "@/components/theme-provider";
 
 export interface Snippet {
   _id: Id<"snippets">;
@@ -17,7 +15,7 @@ export interface Snippet {
 }
 
 export function SnippetClient({ snippet }: { snippet: Snippet }) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const download = () => {
     const map: Record<string, string> = {
@@ -83,7 +81,7 @@ export function SnippetClient({ snippet }: { snippet: Snippet }) {
           <Editor
             value={snippet.content}
             language={snippet.language}
-            theme={theme === "dark" ? "vs-dark" : "light"}
+            theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
             options={{ readOnly: true, minimap: { enabled: false } }}
             height="60vh"
           />
