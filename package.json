@@ -18,7 +18,7 @@
     "@tanstack/react-router": "^1.91.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "convex": "^1.14.1",
+    "convex": "^1.27.5",
     "lucide-react": "^0.542.0",
     "nanoid": "^5.1.5",
     "react": "19.1.0",
