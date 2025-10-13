@@ -22,8 +22,33 @@ export function ThemeProvider({
   defaultTheme = 'system',
   attribute = 'class',
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('light');
+  const [theme, setTheme] = useState<Theme>(() => {
+    // Load theme from localStorage on initialization
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('theme') as Theme;
+      return stored || defaultTheme;
+    }
+    return defaultTheme;
+  });
+  
+  // Initialize resolved theme based on the loaded theme
+  const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const stored = localStorage.getItem('theme') as Theme;
+      const currentTheme = stored || defaultTheme;
+      return currentTheme === 'system' ? systemTheme : currentTheme;
+    }
+    return defaultTheme === 'system' ? 'light' : defaultTheme;
+  });
+
+  // Save theme to localStorage whenever it changes
+  const handleSetTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -39,7 +64,7 @@ export function ThemeProvider({
   }, [theme, attribute]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme, resolvedTheme }}>
       {children}
     </ThemeContext.Provider>
   );

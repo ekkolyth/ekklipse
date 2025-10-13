@@ -11,7 +11,7 @@ export const Route = createRootRoute({
 function RootLayout() {
   return (
     <ConvexProviderWrapper>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <div className="min-h-screen">
           <div className="absolute top-4 right-4">
             <ThemeToggle />
