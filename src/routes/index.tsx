@@ -47,6 +47,10 @@ const languages = [
   'yaml',
   'xml',
   'markdown',
+  'css',
+  'c',
+  'rust',
+  'lua',
   'text',
 ];
 
@@ -59,6 +63,10 @@ const extMap: Record<string, string> = {
   yaml: 'yml',
   xml: 'xml',
   markdown: 'md',
+  css: 'css',
+  c: 'c',
+  rust: 'rs',
+  lua: 'lua',
   text: 'txt',
 };
 
@@ -133,7 +141,7 @@ function Home() {
                   <SelectTrigger className='h-10 rounded-md w-1/4'>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" side="bottom" align="start">
                     {languages.map((lang) => (
                       <SelectItem key={lang} value={lang}>
                         {lang}
