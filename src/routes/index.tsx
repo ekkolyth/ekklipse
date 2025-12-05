@@ -139,7 +139,7 @@ function Home() {
               {showNew ? <MinusIcon className='size-4' /> : <PlusIcon className='size-4' />}
             </button>
             {showNew && (
-              <div className='flex flex-col space-y-4 border-t border-foreground/20 p-6 bg-background'>
+              <div className='flex flex-col space-y-4 border-t border-foreground/20 p-4 bg-background'>
                 <div className='flex flex-row gap-2'>
                   <Input
                     className='h-10 rounded-md'
@@ -256,8 +256,8 @@ function Home() {
               <div
                 key={snip._id}
                 className={cn(
-                  'rounded-xl border border-foreground/20 p-2 pl-4 transition-colors mb-4',
-                  expandedId === snip._id && 'bg-foreground/10 pb-6'
+                  'rounded-xl border border-foreground/20 p-4 transition-colors mb-4',
+                  expandedId === snip._id && 'pb-6'
                 )}
               >
                 <div
