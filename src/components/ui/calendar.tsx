@@ -2,11 +2,40 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, useNavigation } from "react-day-picker"
+import type { MonthCaptionProps } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
+
+function CustomCaption(props: MonthCaptionProps) {
+  const { previousMonth, nextMonth, goToMonth } = useNavigation();
+  
+  return (
+    <div className="flex justify-between items-center py-2 relative">
+      <button
+        type="button"
+        disabled={!previousMonth}
+        onClick={() => previousMonth && goToMonth(previousMonth)}
+        className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 disabled:opacity-25"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <div className="text-sm font-medium">
+        {props.calendarMonth.date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+      </div>
+      <button
+        type="button"
+        disabled={!nextMonth}
+        onClick={() => nextMonth && goToMonth(nextMonth)}
+        className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 disabled:opacity-25"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
 
 function Calendar({
   className,
@@ -23,10 +52,8 @@ function Calendar({
         month: "space-y-4",
         month_caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
-        nav: "space-x-1 flex items-center",
-        button_previous: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 absolute left-1",
-        button_next: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 absolute right-1",
-        month_grid: "w-full border-collapse space-y-1",
+        nav: "hidden",
+        month_grid: "w-full border-collapse space-y-1 mt-4",
         weekdays: "flex",
         weekday: "text-foreground/60 rounded-md w-9 font-normal text-[0.8rem]",
         week: "flex w-full mt-2",
@@ -40,8 +67,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: ({ orientation }) => 
-          orientation === "left" ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
+        MonthCaption: CustomCaption
       }}
       {...props}
     />
