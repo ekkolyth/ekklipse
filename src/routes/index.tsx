@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { HomeHeader } from '@/components/home-header';
 import { SnippetActions } from '@/components/snippet-actions';
+import { ExpirationSelect } from '@/components/expiration-select';
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -68,6 +69,7 @@ function Home() {
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState('text');
   const [content, setContent] = useState('');
+  const [expiresAt, setExpiresAt] = useState<number | undefined>();
   const snippets = useQuery(api.snippets.list) || [];
   const createSnippet = useMutation(api.snippets.create);
   const deleteSnippet = useMutation(api.snippets.remove);
@@ -76,10 +78,11 @@ function Home() {
 
   const saveSnippet = async () => {
     if (!title.trim() || !content.trim()) return;
-    await createSnippet({ name: title, language, content });
+    await createSnippet({ name: title, language, content, expiresAt });
     setTitle('');
     setContent('');
     setLanguage('markdown');
+    setExpiresAt(undefined);
     setShowNew(false);
   };
 
@@ -222,7 +225,11 @@ function Home() {
                     </div>
                   </div>
                 )}
-                <div className='flex justify-end'>
+                <div className='flex justify-between items-center'>
+                  <ExpirationSelect
+                    value={expiresAt}
+                    onChange={setExpiresAt}
+                  />
                   <Button
                     className='rounded-md cursor-pointer'
                     onClick={saveSnippet}

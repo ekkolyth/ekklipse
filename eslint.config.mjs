@@ -1,3 +1,5 @@
+import js from "@eslint/js";
+
 const eslintConfig = [
   {
     ignores: [
@@ -7,6 +9,13 @@ const eslintConfig = [
       "convex/_generated/**",
       "src/routeTree.gen.ts",
     ],
+  },
+  {
+    files: ["**/*.{js,mjs,cjs,ts,tsx}"],
+    ...js.configs.recommended,
+    rules: {
+      // Add any custom rules here if needed
+    },
   },
 ];
 

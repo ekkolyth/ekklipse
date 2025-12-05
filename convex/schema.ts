@@ -8,5 +8,6 @@ export default defineSchema({
     language: v.string(),
     content: v.string(),
     createdAt: v.number(),
+    expiresAt: v.optional(v.number()),
   }).index("slug", ["slug"]),
 });
