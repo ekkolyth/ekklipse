@@ -11,20 +11,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Copy,
-  Download,
-  MoonStar,
-  PlusIcon,
-  MinusIcon,
-  ShareIcon,
-  Trash,
-} from 'lucide-react';
+import { MoonStar, PlusIcon, MinusIcon } from 'lucide-react';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
+import { HomeHeader } from '@/components/home-header';
+import { SnippetActions } from '@/components/snippet-actions';
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -110,205 +104,180 @@ function Home() {
   };
 
   return (
-    <div className='min-h-screen flex flex-col items-center pt-24 p-4'>
-      <h1 className='my-30 text-5xl font-bold flex items-center gap-2'>
-        <MoonStar className='size-14 mr-2' />
-        <span className='text-foreground/60'>ek</span>(klip)
-        <span className='text-foreground/60'>se</span>
-      </h1>
-      <div className='w-full max-w-3xl space-y-4'>
-        <div className='rounded-xl border border-foreground/20 overflow-hidden'>
-          <button
-            onClick={() => setShowNew(!showNew)}
-            className='flex w-full items-center justify-between p-4 cursor-pointer hover:bg-foreground/5 transition-colors'
-          >
-            <span className='flex items-center gap-2'>
-              <MoonStar className='size-5' />
-              New Klip
-            </span>
-            {showNew ? <MinusIcon className='size-4' /> : <PlusIcon className='size-4' />}
-          </button>
-          {showNew && (
-            <div className='flex flex-col space-y-4 border-t border-foreground/20 p-6 bg-background'>
-              <div className='flex flex-row gap-2'>
-                <Input
-                  className='h-10 rounded-md'
-                  placeholder='Name'
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger className='h-10 rounded-md w-1/4'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent position="popper" side="bottom" align="start">
-                    {languages.map((lang) => (
-                      <SelectItem key={lang} value={lang}>
-                        {lang}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {language === 'text' ? (
-                <Textarea
-                  className='h-[20vh] resize-y rounded-md'
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                />
-              ) : (
-                <div className='h-[20vh] resize-y rounded-xl border border-foreground/20 overflow-hidden'>
-                  <div className='px-2 py-4 h-full'>
-                    <Editor
-                      height='100%'
-                      language={language}
-                      value={content}
-                      onChange={(v) => setContent(v ?? '')}
-                      options={{
-                        minimap: { enabled: false },
-                        lineNumbers: 'on',
-                        automaticLayout: true,
-                        fontSize: 16,
-                        lineHeight: 24,
-                      }}
-                      beforeMount={(monaco) => {
-                        monaco.editor.defineTheme('black-theme', {
-                          base: 'vs-dark',
-                          inherit: true,
-                          rules: [],
-                          colors: {
-                            'editor.background': '#000000',
-                          },
-                        });
-                      }}
-                      theme='black-theme'
-                    />
-                  </div>
-                </div>
-              )}
-              <div className='flex justify-end'>
-                <Button className='rounded-md cursor-pointer' onClick={saveSnippet}>
-                  Save Klip
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className=''>
-          {snippets.map((snip) => (
-            <div
-              key={snip._id}
-              className={cn(
-                'rounded-md border border-foreground/20 p-2 pl-4 transition-colors mb-4',
-                expandedId === snip._id && 'bg-foreground/10 pb-6'
-              )}
+    <>
+      <HomeHeader />
+      <div className='min-h-screen flex flex-col items-center pt-24 p-4'>
+        <h1 className='my-30 text-5xl font-bold flex items-center gap-2'>
+          <MoonStar className='size-14 mr-2' />
+          <span className='text-foreground/60'>ek</span>(klip)
+          <span className='text-foreground/60'>se</span>
+        </h1>
+        <div className='w-full max-w-3xl space-y-4'>
+          <div className='rounded-xl border border-foreground/20 overflow-hidden'>
+            <button
+              onClick={() => setShowNew(!showNew)}
+              className='flex w-full items-center justify-between p-4 cursor-pointer hover:bg-foreground/5 transition-colors'
             >
-              <div
-                className='flex items-center justify-between cursor-pointer hover:bg-foreground/5 rounded-md'
-                onClick={() => setExpandedId(expandedId === snip._id ? null : snip._id)}
-              >
-                <Link
-                  to="/$slug"
-                  params={{ slug: snip.slug }}
-                  className='font-medium'
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {snip.name}
-                </Link>
-                <div className='flex items-center gap-1'>
-                  <span className='text-sm text-foreground/60 mr-2'>
-                    {extMap[snip.language] ?? snip.language}
-                  </span>
-                  <Button
-                    className='icon-hover'
-                    variant='ghost'
-                    size='icon'
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigator.clipboard.writeText(snip.content);
-                    }}
+              <span className='flex items-center gap-2'>
+                <MoonStar className='size-5' />
+                New Klip
+              </span>
+              {showNew ? <MinusIcon className='size-4' /> : <PlusIcon className='size-4' />}
+            </button>
+            {showNew && (
+              <div className='flex flex-col space-y-4 border-t border-foreground/20 p-6 bg-background'>
+                <div className='flex flex-row gap-2'>
+                  <Input
+                    className='h-10 rounded-md'
+                    placeholder='Name'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <Select
+                    value={language}
+                    onValueChange={setLanguage}
                   >
-                    <Copy className='size-4' />
-                  </Button>
+                    <SelectTrigger className='h-10 rounded-md w-1/4'>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent
+                      position='popper'
+                      side='bottom'
+                      align='start'
+                    >
+                      {languages.map((lang) => (
+                        <SelectItem
+                          key={lang}
+                          value={lang}
+                        >
+                          {lang}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {language === 'text' ? (
+                  <Textarea
+                    className='h-[20vh] resize-y rounded-md'
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                  />
+                ) : (
+                  <div className='h-[20vh] resize-y rounded-xl border border-foreground/20 overflow-hidden'>
+                    <div className='px-2 py-4 h-full'>
+                      <Editor
+                        height='100%'
+                        language={language}
+                        value={content}
+                        onChange={(v) => setContent(v ?? '')}
+                        options={{
+                          minimap: { enabled: false },
+                          lineNumbers: 'on',
+                          automaticLayout: true,
+                          fontSize: 16,
+                          lineHeight: 24,
+                        }}
+                        beforeMount={(monaco) => {
+                          monaco.editor.defineTheme('black-theme', {
+                            base: 'vs-dark',
+                            inherit: true,
+                            rules: [],
+                            colors: {
+                              'editor.background': '#000000',
+                            },
+                          });
+                        }}
+                        theme='black-theme'
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className='flex justify-end'>
                   <Button
-                    className='icon-hover'
-                    variant='ghost'
-                    size='icon'
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      download(snip);
-                    }}
+                    className='rounded-md cursor-pointer'
+                    onClick={saveSnippet}
                   >
-                    <Download className='size-4' />
-                  </Button>
-                  <Button
-                    className='icon-hover'
-                    variant='ghost'
-                    size='icon'
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      share(snip);
-                    }}
-                  >
-                    <ShareIcon className='size-4' />
-                  </Button>
-                  <Button
-                    className='icon-hover hover:text-red-500'
-                    variant='ghost'
-                    size='icon'
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteSnippet({ id: snip._id });
-                    }}
-                  >
-                    <Trash className='size-4' />
+                    Save Klip
                   </Button>
                 </div>
               </div>
-              {expandedId === snip._id && (
-                <div className='mt-4'>
-                  {snip.language === 'markdown' ? (
-                    <div className='rounded-md border border-foreground/20 p-4'>
-                      <ReactMarkdown>{snip.content}</ReactMarkdown>
-                    </div>
-                  ) : snip.language === 'text' ? (
-                    <pre className='rounded-md border border-foreground/20 p-4 whitespace-pre-wrap mr-2'>
-                      {snip.content}
-                    </pre>
-                  ) : (
-                    <div className='rounded-md border border-foreground/20 overflow-hidden'>
-                      <div className='px-2 py-4'>
-                        <Editor
-                          value={snip.content}
-                          language={snip.language}
-                          options={{
-                            readOnly: true,
-                            minimap: { enabled: false },
-                            fontSize: 14,
-                            lineHeight: 24,
-                          }}
-                          beforeMount={(monaco) => {
-                            monaco.editor.defineTheme('black-theme', {
-                              base: 'vs-dark',
-                              inherit: true,
-                              rules: [],
-                              colors: {
-                                'editor.background': '#000000',
-                              },
-                            });
-                          }}
-                          theme='black-theme'
-                          height='40vh'
-                        />
-                      </div>
-                    </div>
-                  )}
+            )}
+          </div>
+          <div className=''>
+            {snippets.map((snip) => (
+              <div
+                key={snip._id}
+                className={cn(
+                  'rounded-md border border-foreground/20 p-2 pl-4 transition-colors mb-4',
+                  expandedId === snip._id && 'bg-foreground/10 pb-6'
+                )}
+              >
+                <div
+                  className='flex items-center justify-between cursor-pointer hover:bg-foreground/5 rounded-md'
+                  onClick={() => setExpandedId(expandedId === snip._id ? null : snip._id)}
+                >
+                  <Link
+                    to='/$slug'
+                    params={{ slug: snip.slug }}
+                    className='font-medium'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {snip.name}
+                  </Link>
+                  <SnippetActions
+                    snippet={snip}
+                    languageExtension={extMap[snip.language] ?? snip.language}
+                    onCopy={(content) => navigator.clipboard.writeText(content)}
+                    onDownload={download}
+                    onShare={share}
+                    onDelete={(id) => deleteSnippet({ id })}
+                  />
                 </div>
-              )}
-            </div>
-          ))}
+                {expandedId === snip._id && (
+                  <div className='mt-4'>
+                    {snip.language === 'markdown' ? (
+                      <div className='rounded-md border border-foreground/20 p-4'>
+                        <ReactMarkdown>{snip.content}</ReactMarkdown>
+                      </div>
+                    ) : snip.language === 'text' ? (
+                      <pre className='rounded-md border border-foreground/20 p-4 whitespace-pre-wrap mr-2'>
+                        {snip.content}
+                      </pre>
+                    ) : (
+                      <div className='rounded-md border border-foreground/20 overflow-hidden'>
+                        <div className='px-2 py-4'>
+                          <Editor
+                            value={snip.content}
+                            language={snip.language}
+                            options={{
+                              readOnly: true,
+                              minimap: { enabled: false },
+                              fontSize: 14,
+                              lineHeight: 24,
+                            }}
+                            beforeMount={(monaco) => {
+                              monaco.editor.defineTheme('black-theme', {
+                                base: 'vs-dark',
+                                inherit: true,
+                                rules: [],
+                                colors: {
+                                  'editor.background': '#000000',
+                                },
+                              });
+                            }}
+                            theme='black-theme'
+                            height='40vh'
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

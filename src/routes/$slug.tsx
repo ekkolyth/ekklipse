@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { SnippetClient } from '@/components/snippet-client';
+import { LogoHeader } from '@/components/logo-header';
 
 export const Route = createFileRoute('/$slug')({
   component: SnippetPage,
@@ -17,5 +18,10 @@ function SnippetPage() {
   if (snippet === null) {
     return <div className='p-4'>Snippet not found.</div>;
   }
-  return <SnippetClient snippet={snippet} />;
+  return (
+    <>
+      <LogoHeader />
+      <SnippetClient snippet={snippet} />
+    </>
+  );
 }

@@ -1,9 +1,8 @@
 import Editor from "@monaco-editor/react";
-import { Button } from "@/components/ui/button";
-import { Copy, Download, Share2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useTheme } from "@/components/theme-provider";
+import { SnippetActions } from "@/components/snippet-actions";
 
 export interface Snippet {
   _id: Id<"snippets">;
@@ -17,30 +16,35 @@ export interface Snippet {
 export function SnippetClient({ snippet }: { snippet: Snippet }) {
   const { resolvedTheme } = useTheme();
 
-  const download = () => {
-    const map: Record<string, string> = {
-      typescript: "ts",
-      javascript: "js",
-      python: "py",
-      jsx: "jsx",
-      csharp: "cs",
-      yaml: "yml",
-      xml: "xml",
-      markdown: "md",
-      text: "txt",
-    };
-    const ext = map[snippet.language] ?? "txt";
-    const blob = new Blob([snippet.content], { type: "text/plain" });
+  const extMap: Record<string, string> = {
+    typescript: "ts",
+    javascript: "js",
+    python: "py",
+    jsx: "jsx",
+    csharp: "cs",
+    yaml: "yml",
+    xml: "xml",
+    markdown: "md",
+    css: "css",
+    c: "c",
+    rust: "rs",
+    lua: "lua",
+    text: "txt",
+  };
+
+  const download = (snip: Snippet) => {
+    const ext = extMap[snip.language] ?? "txt";
+    const blob = new Blob([snip.content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${snippet.name}.${ext}`;
+    a.download = `${snip.name}.${ext}`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const share = () => {
-    const url = window.location.href;
+  const share = (snip: Snippet) => {
+    const url = `${window.location.origin}/${snip.slug}`;
     if (navigator.share) {
       navigator.share({ url });
     } else {
@@ -52,21 +56,14 @@ export function SnippetClient({ snippet }: { snippet: Snippet }) {
     <div className="min-h-screen flex flex-col justify-center max-w-4xl mx-auto p-4 space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold">{snippet.name}</h1>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigator.clipboard.writeText(snippet.content)}
-          >
-            <Copy className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={download}>
-            <Download className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={share}>
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </div>
+        <SnippetActions
+          snippet={snippet}
+          languageExtension={extMap[snippet.language] ?? snippet.language}
+          onCopy={(content) => navigator.clipboard.writeText(content)}
+          onDownload={download}
+          onShare={share}
+          onDelete={() => {}}
+        />
       </div>
       {snippet.language === "markdown" ? (
         <div className="rounded-2xl border border-foreground/20 p-4">
