@@ -15,7 +15,6 @@ import { MoonStar, PlusIcon, MinusIcon } from 'lucide-react';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
-import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { HomeHeader } from '@/components/home-header';
 import { SnippetActions } from '@/components/snippet-actions';
@@ -255,13 +254,10 @@ function Home() {
             {snippets.map((snip) => (
               <div
                 key={snip._id}
-                className={cn(
-                  'rounded-xl border border-foreground/20 p-4 transition-colors mb-4',
-                  expandedId === snip._id && 'pb-6'
-                )}
+                className='rounded-xl border border-foreground/20 transition-colors mb-4'
               >
                 <div
-                  className='flex items-center justify-between cursor-pointer hover:bg-foreground/5 rounded-md'
+                  className='flex w-full items-center justify-between p-4 cursor-pointer hover:bg-foreground/5 transition-colors'
                   onClick={() => setExpandedId(expandedId === snip._id ? null : snip._id)}
                 >
                   <Link
@@ -282,7 +278,7 @@ function Home() {
                   />
                 </div>
                 {expandedId === snip._id && (
-                  <div className='mt-4'>
+                  <div className='px-4 pb-4 pt-4'>
                     {snip.language === 'markdown' ? (
                       <div className='rounded-md border border-foreground/20 p-4'>
                         <ReactMarkdown>{snip.content}</ReactMarkdown>
