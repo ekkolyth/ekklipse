@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import dayjs from 'dayjs';
 import {
   Select,
@@ -8,7 +7,6 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 
 interface ExpirationSelectProps {
@@ -21,6 +19,14 @@ export function ExpirationSelect({ value, onChange }: ExpirationSelectProps) {
   const [customDate, setCustomDate] = useState<Date | undefined>();
   const [showCalendar, setShowCalendar] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      // Reset to dropdown when closed
+      setShowCalendar(false);
+    }
+  };
 
   const handleSelectChange = (val: string) => {
     if (val === 'custom') {
@@ -53,11 +59,6 @@ export function ExpirationSelect({ value, onChange }: ExpirationSelectProps) {
     }
   };
 
-  const handleBackToDropdown = () => {
-    setShowCalendar(false);
-    setIsOpen(true);
-  };
-
   const getDisplayValue = () => {
     if (!value) return 'Does Not Expire';
     if (selectValue === '1day') return '1 day';
@@ -70,7 +71,7 @@ export function ExpirationSelect({ value, onChange }: ExpirationSelectProps) {
   };
 
   return (
-    <Select value={selectValue} onValueChange={handleSelectChange} open={isOpen} onOpenChange={setIsOpen}>
+    <Select value={selectValue} onValueChange={handleSelectChange} open={isOpen} onOpenChange={handleOpenChange}>
       <SelectTrigger className='h-10 rounded-md w-[200px]'>
         <SelectValue>{getDisplayValue()}</SelectValue>
       </SelectTrigger>
@@ -93,22 +94,12 @@ export function ExpirationSelect({ value, onChange }: ExpirationSelectProps) {
             </div>
           </>
         ) : (
-          <div className='p-2'>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={handleBackToDropdown}
-              className='mb-2 h-7 w-7'
-            >
-              <ArrowLeft className='h-4 w-4' />
-            </Button>
-            <Calendar
-              mode='single'
-              selected={customDate}
-              onSelect={handleDateSelect}
-              disabled={(date) => date < new Date()}
-            />
-          </div>
+          <Calendar
+            mode='single'
+            selected={customDate}
+            onSelect={handleDateSelect}
+            disabled={(date) => date < new Date()}
+          />
         )}
       </SelectContent>
     </Select>

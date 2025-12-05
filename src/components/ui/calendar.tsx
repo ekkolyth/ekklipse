@@ -13,7 +13,7 @@ function CustomCaption(props: MonthCaptionProps) {
   const { previousMonth, nextMonth, goToMonth } = useNavigation();
   
   return (
-    <div className="flex justify-between items-center py-2 relative">
+    <div className="flex justify-between items-center mb-4">
       <button
         type="button"
         disabled={!previousMonth}
@@ -46,14 +46,14 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
+      className={cn("p-3 pb-6", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        month_caption: "flex justify-center pt-1 relative items-center",
+        month: "space-y-0",
+        month_caption: "flex justify-center relative items-center",
         caption_label: "text-sm font-medium",
         nav: "hidden",
-        month_grid: "w-full border-collapse space-y-1 mt-4",
+        month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex",
         weekday: "text-foreground/60 rounded-md w-9 font-normal text-[0.8rem]",
         week: "flex w-full mt-2",
