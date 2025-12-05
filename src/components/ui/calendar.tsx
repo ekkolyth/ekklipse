@@ -18,7 +18,7 @@ function CustomCaption(props: MonthCaptionProps) {
         type="button"
         disabled={!previousMonth}
         onClick={() => previousMonth && goToMonth(previousMonth)}
-        className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 disabled:opacity-25"
+        className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 disabled:opacity-25 cursor-pointer disabled:cursor-not-allowed"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -29,7 +29,7 @@ function CustomCaption(props: MonthCaptionProps) {
         type="button"
         disabled={!nextMonth}
         onClick={() => nextMonth && goToMonth(nextMonth)}
-        className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 disabled:opacity-25"
+        className="h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded border border-foreground/20 disabled:opacity-25 cursor-pointer disabled:cursor-not-allowed"
       >
         <ChevronRight className="h-4 w-4" />
       </button>
@@ -58,7 +58,7 @@ function Calendar({
         weekday: "text-foreground/60 rounded-md w-9 font-normal text-[0.8rem]",
         week: "flex w-full mt-2",
         day: "h-9 w-9 text-center text-sm p-0 relative",
-        day_button: "h-9 w-9 p-0 font-normal hover:bg-foreground/10 rounded-md inline-flex items-center justify-center w-full",
+        day_button: "h-9 w-9 p-0 font-normal hover:bg-foreground/10 rounded-md inline-flex items-center justify-center w-full cursor-pointer",
         selected: "bg-foreground text-background hover:bg-foreground hover:text-background",
         today: "bg-foreground/10",
         outside: "text-foreground/30 opacity-50",

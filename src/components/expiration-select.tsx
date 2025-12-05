@@ -83,7 +83,7 @@ export function ExpirationSelect({ value, onChange }: ExpirationSelectProps) {
             <SelectItem value='7days'>7 days</SelectItem>
             <SelectItem value='30days'>30 days</SelectItem>
             <div
-              className='relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-foreground/10 hover:text-foreground'
+              className='relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:bg-foreground/10 hover:text-foreground'
               onClick={(e) => {
                 e.preventDefault();
                 setShowCalendar(true);
