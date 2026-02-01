@@ -4,13 +4,13 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile
+# Try frozen lockfile first, fall back to regular install if lockfile is outdated
+RUN pnpm install --frozen-lockfile || pnpm install
 
 COPY . .
-ARG VITE_CONVEX_URL
-ARG VITE_CONVEX_SITE_URL
+# Default to localhost - accessible from browser when backend port is exposed
+ARG VITE_CONVEX_URL=http://localhost:3210
 ENV VITE_CONVEX_URL=${VITE_CONVEX_URL}
-ENV VITE_CONVEX_SITE_URL=${VITE_CONVEX_SITE_URL}
 
 RUN pnpm build  # outputs dist/
 

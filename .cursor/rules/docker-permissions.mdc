@@ -1,0 +1,15 @@
+---
+description: Do not start Docker or dev containers without explicit user permission
+alwaysApply: true
+---
+
+# Docker and Dev Containers
+
+Do **not** start or run:
+
+- Docker containers (e.g. `docker-compose up`, `docker run`, `make docker/up`)
+- Dev containers or dev servers that run in the background
+
+unless the user has explicitly asked you to do so or given permission.
+
+If a task would require starting containers or long-running dev processes, propose the command or steps and ask the user to run them, or wait for them to confirm before executing.

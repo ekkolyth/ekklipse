@@ -1,0 +1,68 @@
+# Docker
+DOCKER_IMAGE ?= ekkolyth/ekklipse
+DOCKER_TAG ?= dev
+
+-include .env.local
+export
+
+all: build
+
+build: build-web build-db
+
+build-web:
+	@echo "Building web UI..."
+
+build-db:
+	@echo "Building Convex backend..."
+
+# ==========================================================
+# Docker
+# ==========================================================
+
+docker/build:
+	@if [ ! -f "docker/Dockerfile" ]; then \
+		echo "Error: Must run from project root directory"; \
+		exit 1; \
+	fi
+	@echo "Building frontend image..."
+	docker build --platform linux/amd64 \
+		--build-arg VITE_CONVEX_URL=http://localhost:3210 \
+		-f docker/Dockerfile \
+		-t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+	@echo "Building convex-init image..."
+	cd docker && docker-compose build convex-init
+
+docker/tag:
+	@test -n "$(NEW_TAG)" || (echo "Usage: make docker/tag NEW_TAG=v0.1.0"; exit 1)
+	docker tag $(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_IMAGE):$(NEW_TAG)
+
+docker/push:
+	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
+
+docker/up:
+	cd docker && unset VITE_CONVEX_URL && docker-compose build --no-cache convex-init && docker-compose up
+
+docker/setup:
+	@echo "Setting up Convex backend..."
+	@cd docker && docker-compose up -d backend dashboard
+	@echo "Waiting for backend to be ready..."
+	@sleep 5
+	@echo "Generating admin key..."
+	@cd docker && docker-compose exec -T backend ./generate_admin_key.sh > /tmp/convex_admin_key.txt 2>&1 || true
+	@echo "Admin key generated. Check /tmp/convex_admin_key.txt"
+	@echo "Add it to .env.local as CONVEX_SELF_HOSTED_ADMIN_KEY"
+	@echo ""
+	@echo "Then deploy functions with:"
+	@echo "  CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY=<key> npx convex deploy --prod"
+
+docker/deploy:
+	@if [ -z "$(CONVEX_SELF_HOSTED_ADMIN_KEY)" ]; then \
+		echo "Error: CONVEX_SELF_HOSTED_ADMIN_KEY not set. Generate one with: make docker/setup"; \
+		exit 1; \
+	fi
+	@echo "Deploying Convex functions to Docker backend..."
+	CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY=$(CONVEX_SELF_HOSTED_ADMIN_KEY) npx convex deploy --prod
+
+.PHONY: \
+	all build build-web build-db \
+	docker/build docker/tag docker/push docker/setup docker/deploy

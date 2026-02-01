@@ -1,0 +1,20 @@
+# Convex Init Container - generates admin key and deploys functions
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install Convex CLI, wget, docker-cli, and pnpm
+RUN npm install -g convex && \
+    apk add --no-cache wget docker-cli && \
+    corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy package files and install dependencies
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile || pnpm install
+
+# Copy convex functions and init script
+COPY convex ./convex
+COPY docker/init-convex.sh ./init-convex.sh
+RUN chmod +x ./init-convex.sh
+
+CMD ["./init-convex.sh"]

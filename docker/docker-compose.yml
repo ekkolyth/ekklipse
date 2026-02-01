@@ -1,0 +1,85 @@
+services:
+  # Convex Backend - official self-hosted backend
+  backend:
+    image: ghcr.io/get-convex/convex-backend:latest
+    container_name: ekklipse-convex-backend
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    ports:
+      - "3210:3210"  # Convex API
+      - "3211:3211"  # HTTP Actions
+    volumes:
+      - convex-data:/convex/data
+    environment:
+      - CONVEX_CLOUD_ORIGIN=http://127.0.0.1:3210
+      - CONVEX_SITE_ORIGIN=http://127.0.0.1:3211
+    networks:
+      - ekklipse-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3210/version"]
+      interval: 5s
+      start_period: 10s
+      timeout: 5s
+      retries: 3
+
+  # Convex Dashboard
+  dashboard:
+    image: ghcr.io/get-convex/convex-dashboard:latest
+    container_name: ekklipse-convex-dashboard
+    stop_grace_period: 10s
+    stop_signal: SIGINT
+    ports:
+      - "6791:6791"  # Dashboard
+    environment:
+      - NEXT_PUBLIC_DEPLOYMENT_URL=http://127.0.0.1:3210
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ekklipse-network
+    restart: unless-stopped
+
+  # Convex Init - automatically generates admin key and deploys functions
+  convex-init:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.convex-init
+    container_name: ekklipse-convex-init
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ekklipse-network
+    restart: "no"  # Only run once
+
+  # Frontend Web UI - connects to backend automatically
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        # Connect to backend - must be accessible from browser (localhost)
+        VITE_CONVEX_URL: http://localhost:3210
+    image: ${DOCKER_IMAGE:-ekkolyth/ekklipse}:${DOCKER_TAG:-dev}
+    container_name: ekklipse-frontend
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+      convex-init:
+        condition: service_completed_successfully
+    networks:
+      - ekklipse-network
+    restart: unless-stopped
+
+volumes:
+  convex-data:
+    driver: local
+
+networks:
+  ekklipse-network:
+    driver: bridge

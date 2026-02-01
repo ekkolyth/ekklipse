@@ -1,0 +1,77 @@
+version: '3.8'
+
+# Example docker-compose.yml for ekklipse
+# This setup automatically includes both Convex backend and frontend
+# Just run: docker compose -f docker/docker-compose.yml up
+
+services:
+  # Convex Backend - runs automatically in local mode
+  # No configuration needed! It just works.
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.convex
+    container_name: ekklipse-convex-backend
+    ports:
+      - "3210:3210"  # Convex API
+      - "6791:6791"  # Convex Dashboard (optional, for monitoring)
+    volumes:
+      - convex-data:/convex/data
+      - ../convex:/convex/functions
+    environment:
+      # Local mode - no authentication required
+      - CONVEX_DEPLOYMENT=local
+    networks:
+      - ekklipse-network
+    restart: unless-stopped
+
+  # Frontend Web UI - automatically connects to backend
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        # Automatically connects to backend (accessible from browser)
+        VITE_CONVEX_URL: http://localhost:3210
+    image: ${DOCKER_IMAGE:-ekkolyth/ekklipse}:${DOCKER_TAG:-dev}
+    container_name: ekklipse-frontend
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      - backend
+    networks:
+      - ekklipse-network
+    restart: unless-stopped
+
+volumes:
+  convex-data:
+    driver: local
+
+networks:
+  ekklipse-network:
+    driver: bridge
+
+# ============================================================================
+# USAGE - IT'S THAT SIMPLE!
+# ============================================================================
+#
+# 1. Copy this file: cp docker/docker-compose.example.yml docker/docker-compose.yml
+# 2. Run: docker compose -f docker/docker-compose.yml up
+# 3. Access: http://localhost:3000
+#
+# That's it! Convex backend runs automatically in the background.
+# No configuration, no setup, no knowledge of Convex required.
+#
+# Optional: Access Convex dashboard at http://localhost:6791
+#
+# ============================================================================
+# ADVANCED: Using Your Own Convex Instance
+# ============================================================================
+#
+# If you want to use Convex Cloud or your own self-hosted instance instead:
+#
+# 1. Remove the backend service from docker-compose.yml
+# 2. Build frontend with your Convex URL:
+#    VITE_CONVEX_URL=https://your-project.convex.cloud make docker/build
+# 3. Update docker-compose.yml frontend service to use the pre-built image
+#    and set VITE_CONVEX_URL to your Convex URL
