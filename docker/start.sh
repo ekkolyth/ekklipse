@@ -1,0 +1,69 @@
+#!/bin/bash
+set -e
+
+# Create data directories
+export DATA_DIR=/convex/data
+export TMPDIR=${TMPDIR:-"$DATA_DIR/tmp"}
+export STORAGE_DIR=${STORAGE_DIR:-"$DATA_DIR/storage"}
+export SQLITE_DB=${SQLITE_DB:-"$DATA_DIR/db.sqlite3"}
+mkdir -p "$TMPDIR" "$STORAGE_DIR"
+
+# Read or generate credentials (this sets INSTANCE_SECRET and INSTANCE_NAME)
+cd /convex
+. ./read_credentials.sh
+cd /app
+
+# Generate admin key
+echo "Generating admin key..."
+cd /convex
+ADMIN_KEY=$(./generate_admin_key.sh 2>/dev/null | tail -1 | tr -d '\r\n')
+cd /app
+export CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMIN_KEY"
+export CONVEX_SELF_HOSTED_URL=http://localhost:3210
+
+echo "Starting Convex backend..."
+# Start Convex backend in background (matches official run_backend.sh)
+cd /convex
+./convex-local-backend \
+  --instance-name "$INSTANCE_NAME" \
+  --instance-secret "$INSTANCE_SECRET" \
+  --port 3210 \
+  --site-proxy-port 3211 \
+  --convex-origin "http://127.0.0.1:3210" \
+  --convex-site "http://127.0.0.1:3211" \
+  --beacon-tag "self-hosted-docker" \
+  --local-storage "$STORAGE_DIR" \
+  "$SQLITE_DB" \
+  > /tmp/convex.log 2>&1 &
+cd /app
+CONVEX_PID=$!
+
+echo "Waiting for Convex backend to be ready..."
+# Wait up to 60 seconds for backend to start
+TIMEOUT=60
+ELAPSED=0
+while [ $ELAPSED -lt $TIMEOUT ]; do
+  if curl -sf http://localhost:3210/version > /dev/null 2>&1; then
+    echo "Backend is ready!"
+    break
+  fi
+  sleep 1
+  ELAPSED=$((ELAPSED + 1))
+done
+
+if [ $ELAPSED -ge $TIMEOUT ]; then
+  echo "ERROR: Convex backend failed to start within $TIMEOUT seconds"
+  echo "Backend logs:"
+  cat /tmp/convex.log || true
+  exit 1
+fi
+
+echo "Deploying Convex functions..."
+# Deploy functions to local backend
+cd /app
+CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMIN_KEY" npx convex deploy --yes || true
+
+echo "Starting frontend server..."
+# Start frontend server (this becomes the main process)
+# Keep Convex backend running in background
+exec serve -s dist -l 3000

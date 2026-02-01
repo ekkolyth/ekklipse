@@ -24,13 +24,11 @@ docker/build:
 		echo "Error: Must run from project root directory"; \
 		exit 1; \
 	fi
-	@echo "Building frontend image..."
+	@echo "Building single image (frontend + Convex backend)..."
 	docker build --platform linux/amd64 \
 		--build-arg VITE_CONVEX_URL=http://localhost:3210 \
 		-f docker/Dockerfile \
 		-t $(DOCKER_IMAGE):$(DOCKER_TAG) .
-	@echo "Building convex-init image..."
-	cd docker && docker-compose build convex-init
 
 docker/tag:
 	@test -n "$(NEW_TAG)" || (echo "Usage: make docker/tag NEW_TAG=v0.1.0"; exit 1)
@@ -40,7 +38,7 @@ docker/push:
 	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
 
 docker/up:
-	cd docker && unset VITE_CONVEX_URL && docker-compose build --no-cache convex-init && docker-compose up
+	cd docker && unset VITE_CONVEX_URL && docker-compose up
 
 docker/setup:
 	@echo "Setting up Convex backend..."
