@@ -19,8 +19,8 @@ RUN pnpm build
 # --- Runtime: ONE image with frontend + Convex backend ---
 # Use Convex backend image as base (Ubuntu-based with all required libraries)
 # This ensures the backend binary runs correctly with all its dependencies
-ARG TARGETPLATFORM=linux/amd64
-FROM --platform=${TARGETPLATFORM} ghcr.io/get-convex/convex-backend:latest
+# TARGETPLATFORM (linux/amd64) is applied automatically via build args
+FROM ghcr.io/get-convex/convex-backend:latest
 WORKDIR /app
 
 # Install Node.js 22 (Convex backend image doesn't include Node.js)
@@ -43,10 +43,10 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile || pnpm install --prod
 
 # Copy startup script
-COPY docker/start.sh ./start.sh
-RUN chmod +x ./start.sh
+COPY docker/init.sh ./init.sh
+RUN chmod +x ./init.sh
 
 # Override backend image's ENTRYPOINT (./run_backend.sh) with our startup script
 EXPOSE 3000 3210
 ENTRYPOINT []
-CMD ["./start.sh"]
+CMD ["./init.sh"]

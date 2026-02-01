@@ -68,4 +68,4 @@ volumes:
 # 1. Build frontend with your Convex URL:
 #    VITE_CONVEX_URL=https://your-project.convex.cloud make docker/build
 # 2. Update docker-compose.yml to remove the Convex backend startup
-#    (modify docker/start.sh to skip backend startup)
+#    (modify docker/init.sh to skip backend startup)

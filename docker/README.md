@@ -1,60 +1,30 @@
 # Docker Setup for ekklipse
 
-This directory contains Docker configuration files for running ekklipse with Convex backend automatically included!
+ONE image with everything - frontend + Convex backend. Just works out of the box!
 
 ## Quick Start
 
-**First time setup (one-time admin key generation):**
-
 ```bash
-# 1. Start the backend
-docker compose -f docker/docker-compose.yml up backend dashboard -d
-
-# 2. Generate admin key (one-time)
-docker compose -f docker/docker-compose.yml exec backend ./generate_admin_key.sh
-
-# 3. Copy the admin key and add it to .env.local:
-# CONVEX_SELF_HOSTED_URL=http://localhost:3210
-# CONVEX_SELF_HOSTED_ADMIN_KEY=<paste the admin key here>
-
-# 4. Deploy Convex functions
-CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY=<your-key> npx convex deploy --prod
-
-# 5. Build and start everything
 make docker/build
-docker compose -f docker/docker-compose.yml up
-```
-
-**After initial setup:**
-
-```bash
-docker compose -f docker/docker-compose.yml up
+make docker/up
 ```
 
 Then access your app at http://localhost:3000
 
 ## How It Works
 
-The docker-compose setup includes:
+A single Docker image contains:
 
-1. **Backend** - Official Convex self-hosted backend (`ghcr.io/get-convex/convex-backend`)
-   - Runs on port 3210 (API) and 3211 (HTTP Actions)
-   - Data persists in Docker volume
-
-2. **Dashboard** - Convex dashboard for monitoring
-   - Access at http://localhost:6791
-
-3. **Frontend** - Web UI that connects to backend automatically
-   - Built with Convex URL pointing to localhost:3210
-   - Runs on port 3000
+1. **Convex backend** - Official self-hosted backend, auto-starts with credentials
+2. **Convex functions** - Auto-deployed on container startup
+3. **Frontend** - Web UI that connects to the backend automatically
 
 ## Files
 
-- `Dockerfile` - Builds the frontend web UI
-- `Dockerfile.convex` - (Not used - functions deployed via CLI)
-- `docker-compose.yml` - Main docker-compose file with backend, dashboard, and frontend
+- `Dockerfile` - Builds the single image (frontend + Convex backend)
+- `init.sh` - Startup script (starts backend, deploys functions, serves frontend)
+- `docker-compose.yml` - Runs the single app service
 - `docker-compose.example.yml` - Example with documentation
-- `init-convex.sh` - Helper script (for future automation)
 
 ## Makefile Commands
 
