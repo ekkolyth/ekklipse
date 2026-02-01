@@ -1,14 +1,12 @@
-import { cronJobs } from "convex/server";
-import { api } from "./_generated/api";
+import { cronJobs } from 'convex/server'
+import { api } from './_generated/api'
 
-const crons = cronJobs();
+const crons = cronJobs()
 
 crons.daily(
-  "delete expired snippets",
-  { hourUTC: 0, minuteUTC: 0 },
-  api.snippets.deleteExpiredSnippets
-);
+    'delete expired klips',
+    { hourUTC: 0, minuteUTC: 0 },
+    api.klips.deleteExpiredKlips
+)
 
-export default crons;
-
-
+export default crons

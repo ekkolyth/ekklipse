@@ -1,71 +1,21 @@
-# Example docker-compose.yml for ekklipse
-# ONE IMAGE - Everything included! Frontend + Convex Backend all in one.
-
 services:
-  # ONE IMAGE - Frontend + Convex Backend all in one!
-  app:
-    platform: linux/amd64  # Convex backend requires amd64 (uses QEMU emulation on ARM Macs)
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      args:
-        VITE_CONVEX_URL: http://localhost:3210
-        TARGETPLATFORM: linux/amd64  # Convex backend requires amd64
-    image: ${DOCKER_IMAGE:-ekkolyth/ekklipse}:${DOCKER_TAG:-dev}
-    container_name: ekklipse
-    ports:
-      - "${PORT:-3000}:3000"  # Frontend
-      - "3210:3210"            # Convex Backend API
-    volumes:
-      - convex-data:/convex/data
-    restart: unless-stopped
+    app:
+        platform: linux/amd64 # Convex backend requires amd64
+        build:
+            context: ..
+            dockerfile: docker/Dockerfile
+            args:
+                VITE_CONVEX_URL: http://localhost:3210
+                TARGETPLATFORM: linux/amd64
+        image: ${DOCKER_IMAGE:-ekkolyth/ekklipse}:${DOCKER_TAG:-dev}
+        container_name: ekklipse
+        ports:
+            - "${PORT:-3000}:3000" # Frontend
+            - "3210:3210" # Convex Backend API
+        volumes:
+            - convex-data:/convex/data
+        restart: unless-stopped
 
 volumes:
-  convex-data:
-    driver: local
-
-# ============================================================================
-# USAGE - IT'S THAT SIMPLE!
-# ============================================================================
-#
-# 1. Copy this file: cp docker/docker-compose.example.yml docker/docker-compose.yml
-# 2. Run: docker compose -f docker/docker-compose.yml up
-# 3. Access: http://localhost:3000
-#
-# That's it! ONE image contains everything - frontend AND Convex backend.
-# No configuration, no setup, no knowledge of Convex required.
-# Just works out of the box!
-#
-# ============================================================================
-# OR USE THE PRE-BUILT IMAGE
-# ============================================================================
-#
-# If you've already built and pushed the image:
-#
-# services:
-#   app:
-#     image: ekkolyth/ekklipse:dev
-#     container_name: ekklipse
-#     ports:
-#       - "3000:3000"
-#       - "3210:3210"
-#     volumes:
-#       - convex-data:/convex/data
-#     restart: unless-stopped
-#
-# volumes:
-#   convex-data:
-#     driver: local
-#
-# Then just run: docker compose -f docker/docker-compose.yml up
-#
-# ============================================================================
-# ADVANCED: Using Your Own Convex Instance
-# ============================================================================
-#
-# If you want to use Convex Cloud or your own self-hosted instance instead:
-#
-# 1. Build frontend with your Convex URL:
-#    VITE_CONVEX_URL=https://your-project.convex.cloud make docker/build
-# 2. Update docker-compose.yml to remove the Convex backend startup
-#    (modify docker/init.sh to skip backend startup)
+    convex-data:
+        driver: local

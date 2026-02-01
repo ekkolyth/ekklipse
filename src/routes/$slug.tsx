@@ -1,46 +1,48 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useQuery } from 'convex/react';
-import { useEffect } from 'react';
-import { api } from '../../convex/_generated/api';
-import { SnippetClient } from '@/components/snippet-client';
-import { LogoHeader } from '@/components/logo-header';
+import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from 'convex/react'
+import { useEffect } from 'react'
+import { KlipClient } from '@/components/klip/client'
+import { LogoHeader } from '@/components/nav/logo-header'
+import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/$slug')({
-  component: SnippetPage,
-});
+    component: KlipPage,
+})
 
-function SnippetPage() {
-  const { slug } = Route.useParams();
-  const snippet = useQuery(api.snippets.get, { slug });
+function KlipPage() {
+    const { slug } = Route.useParams()
+    const klip = useQuery(api.klips.get, { slug })
 
-  useEffect(() => {
-    if (snippet) {
-      document.title = snippet.name;
-      
-      // Update OG title
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        ogTitle.setAttribute('content', snippet.name);
-      }
-      
-      // Update Twitter title
-      const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-      if (twitterTitle) {
-        twitterTitle.setAttribute('content', snippet.name);
-      }
+    useEffect(() => {
+        if (klip) {
+            document.title = klip.name
+
+            // Update OG title
+            const ogTitle = document.querySelector('meta[property="og:title"]')
+            if (ogTitle) {
+                ogTitle.setAttribute('content', klip.name)
+            }
+
+            // Update Twitter title
+            const twitterTitle = document.querySelector(
+                'meta[name="twitter:title"]'
+            )
+            if (twitterTitle) {
+                twitterTitle.setAttribute('content', klip.name)
+            }
+        }
+    }, [klip])
+
+    if (klip === undefined) {
+        return <div className='p-4'>Loading...</div>
     }
-  }, [snippet]);
-  
-  if (snippet === undefined) {
-    return <div className='p-4'>Loading...</div>;
-  }
-  if (snippet === null) {
-    return <div className='p-4'>Snippet not found.</div>;
-  }
-  return (
-    <>
-      <LogoHeader />
-      <SnippetClient snippet={snippet} />
-    </>
-  );
+    if (klip === null) {
+        return <div className='p-4'>Klip not found.</div>
+    }
+    return (
+        <>
+            <LogoHeader />
+            <KlipClient klip={klip} />
+        </>
+    )
 }

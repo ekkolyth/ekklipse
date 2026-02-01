@@ -22,7 +22,7 @@ export CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMIN_KEY"
 export CONVEX_SELF_HOSTED_URL=http://localhost:3210
 
 echo "Starting Convex backend..."
-# Start Convex backend in background (matches official run_backend.sh)
+# Start Convex backend in background
 cd /convex
 ./convex-local-backend \
   --instance-name "$INSTANCE_NAME" \
@@ -39,7 +39,7 @@ cd /app
 CONVEX_PID=$!
 
 echo "Waiting for Convex backend to be ready..."
-# Wait up to 60 seconds for backend to start
+
 TIMEOUT=60
 ELAPSED=0
 while [ $ELAPSED -lt $TIMEOUT ]; do
@@ -59,11 +59,11 @@ if [ $ELAPSED -ge $TIMEOUT ]; then
 fi
 
 echo "Deploying Convex functions..."
-# Deploy functions to local backend
+
 cd /app
 CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMIN_KEY" npx convex deploy --yes || true
 
 echo "Starting frontend server..."
-# Start frontend server (this becomes the main process)
+# Start frontend server
 # Keep Convex backend running in background
 exec serve -s dist -l 3000

@@ -1,0 +1,31 @@
+export const languages = [
+    'typescript',
+    'javascript',
+    'python',
+    'jsx',
+    'csharp',
+    'yaml',
+    'xml',
+    'markdown',
+    'css',
+    'c',
+    'rust',
+    'lua',
+    'text',
+]
+
+export const extMap: Record<string, string> = {
+    typescript: 'ts',
+    javascript: 'js',
+    python: 'py',
+    jsx: 'jsx',
+    csharp: 'cs',
+    yaml: 'yml',
+    xml: 'xml',
+    markdown: 'md',
+    css: 'css',
+    c: 'c',
+    rust: 'rs',
+    lua: 'lua',
+    text: 'txt',
+}

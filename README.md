@@ -6,9 +6,7 @@ ekklipse is a simple pastebin app to share links, code, or other text with your 
 
 ## Contributing
 
-This is a [Tanstack Start](https://tanstack.com/start/latest) project bootstrapped with [`create-ekko-app`](https://github.com/mikekenway/create-ekko-app).
-
-This is meant to be a fairly simple app, but ideas and pull requests are welcome! Currently working on dockerizing this so I can release it as a self hosted app!
+This is a [Tanstack Start](https://tanstack.com/start/latest) project built on top of Convex. It's intentionally feature-lite, but ideas and PR's are welcome!
 
 1. Fork this repo
 2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/ekklipse.git`
@@ -18,12 +16,7 @@ This is meant to be a fairly simple app, but ideas and pull requests are welcome
 First, run the development server:
 
 ```bash
-pnpm dev
+make dev
 ```
 
 Dev Server: [http://localhost:3000](http://localhost:3000)
-
-- [Convex Documentation](https://docs.convex.dev) - learn about Convex real-time database and backend.
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs) - learn about utility-first CSS framework.
-- [shadcn/ui Documentation](https://ui.shadcn.com) - learn about the re-usable components library.
-- [Monaco Editor Documentation](https://microsoft.github.io/monaco-editor/) - learn about the code editor that powers VS Code.
