@@ -73,6 +73,11 @@ echo "window.__CONVEX_URL__=\"$CONVEX_URL_ESCAPED\";" > dist/convex-config.js
 # Cache-bust so the browser never uses a cached empty convex-config.js
 sed -i "s|__CONVEX_CONFIG_QUERY__|?v=$(date +%s)|g" dist/index.html
 
+echo "---"
+echo "Web UI:  ${APP_URL:-http://localhost}:${WEBUI_PORT:-3000}"
+echo "API:     $CONVEX_URL"
+echo "---"
+
 echo "Starting frontend server..."
 # Start frontend server
 # Keep Convex backend running in background
