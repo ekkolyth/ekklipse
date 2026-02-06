@@ -26,7 +26,8 @@ docker/build:
 	fi
 	@echo "Building single image (frontend + Convex backend)..."
 	docker build --platform linux/amd64 \
-		--build-arg VITE_CONVEX_URL=http://localhost:3210 \
+		--build-arg APP_URL=$${APP_URL:-http://localhost} \
+		--build-arg API_PORT=$${API_PORT:-3210} \
 		-f docker/Dockerfile \
 		-t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 
@@ -38,7 +39,7 @@ docker/push:
 	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
 
 docker/up:
-	cd docker && unset VITE_CONVEX_URL && docker-compose up
+	cd docker && docker-compose up
 
 docker/setup:
 	@echo "Setting up Convex backend..."

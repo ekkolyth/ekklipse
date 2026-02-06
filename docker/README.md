@@ -35,9 +35,25 @@ A single Docker image contains:
 
 ## Environment Variables
 
-- `PORT` - Port for the web UI (default: 3000)
+- `WEB_PORT` - Port for the web UI (default: 3000)
+- `API_PORT` - Port for the Convex backend API (default: 3210). The frontend Convex URL is built as `APP_URL` + `:` + `API_PORT`, so you set the port once.
+- `APP_URL` - Base URL for the Convex API (default: `http://localhost`). Override with your server’s hostname/IP or reverse-proxy domain (e.g. `https://app.example.com`). Build-time.
 - `DOCKER_IMAGE` - Docker image name (default: ekkolyth/ekklipse)
 - `DOCKER_TAG` - Docker image tag (default: dev)
+
+## Deploying to a server (WebSocket / "can't save" fix)
+
+If you run the container on a **server**, the browser must reach the Convex API at the server’s address, not localhost. Set **APP_URL** (and optionally **API_PORT**) before building; the Convex URL is derived as `APP_URL` + `:` + `API_PORT`.
+
+```bash
+# Server by IP or hostname (port comes from API_PORT)
+export APP_URL=http://YOUR_SERVER_IP_OR_DOMAIN
+export API_PORT=3210   # optional if using default
+docker compose -f docker/docker-compose.example.yml build
+docker compose -f docker/docker-compose.example.yml up -d
+```
+
+With a **reverse proxy** (e.g. HTTPS at a domain), set `APP_URL` to that domain; set `API_PORT` to the port in the URL (e.g. `443` for HTTPS) or leave it if you expose 3210 directly.
 
 ## Convex Functions Deployment
 
@@ -63,8 +79,8 @@ docker compose -f docker/docker-compose.yml down -v
 If you want to use Convex Cloud or your own self-hosted instance instead:
 
 1. Remove the `backend` and `dashboard` services from `docker-compose.yml`
-2. Build frontend with your Convex URL:
+2. Build with your Convex URL:
    ```bash
-   VITE_CONVEX_URL=https://your-project.convex.cloud make docker/build
+   APP_URL=https://your-project.convex.cloud API_PORT=443 make docker/build
    ```
-3. Update `docker-compose.yml` to use the pre-built image and your Convex URL
+3. Update `docker-compose.yml` to use the pre-built image

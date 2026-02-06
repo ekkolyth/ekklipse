@@ -9,8 +9,10 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile || pnpm install
 
 COPY . .
-ARG VITE_CONVEX_URL=http://localhost:3210
-ENV VITE_CONVEX_URL=${VITE_CONVEX_URL}
+# Convex URL is APP_URL + ":" + API_PORT so the port is set in one place
+ARG APP_URL=http://localhost
+ARG API_PORT=3210
+ENV VITE_CONVEX_URL=${APP_URL}:${API_PORT}
 RUN rm -f .env.local .env .env.production .env.development 2>/dev/null || true
 RUN pnpm build
 
