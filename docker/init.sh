@@ -63,6 +63,10 @@ echo "Deploying Convex functions..."
 cd /app
 CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMIN_KEY" npx convex deploy --yes || true
 
+echo "Writing runtime config..."
+# So the frontend knows which Convex URL to use (works with any APP_URL/API_PORT at runtime)
+echo "{\"convexUrl\": \"${PUBLIC_CONVEX_URL:-http://localhost:3210}\"}" > dist/config.json
+
 echo "Starting frontend server..."
 # Start frontend server
 # Keep Convex backend running in background

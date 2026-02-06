@@ -1,8 +1,35 @@
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { ConvexProvider, ConvexReactClient } from 'convex/react'
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL || '')
+const buildTimeUrl = import.meta.env.VITE_CONVEX_URL || ''
 
 export function ConvexProviderWrapper({ children }: { children: ReactNode }) {
-    return <ConvexProvider client={convex}>{children}</ConvexProvider>
+    const [runtimeUrl, setRuntimeUrl] = useState<string | null>(null)
+
+    useEffect(() => {
+        fetch('/config.json')
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data: { convexUrl?: string } | null) => {
+                setRuntimeUrl(data?.convexUrl ?? buildTimeUrl)
+            })
+            .catch(() => setRuntimeUrl(buildTimeUrl))
+    }, [])
+
+    const client = useMemo(
+        () =>
+            runtimeUrl !== null && runtimeUrl
+                ? new ConvexReactClient(runtimeUrl)
+                : null,
+        [runtimeUrl],
+    )
+
+    if (client === null) {
+        return (
+            <div className="flex min-h-screen items-center justify-center text-muted-foreground">
+                Loading…
+            </div>
+        )
+    }
+
+    return <ConvexProvider client={client}>{children}</ConvexProvider>
 }
