@@ -7,6 +7,11 @@ export function ConvexProviderWrapper({ children }: { children: ReactNode }) {
     const [runtimeUrl, setRuntimeUrl] = useState<string | null>(null)
 
     useEffect(() => {
+        const injected = typeof window !== 'undefined' && (window as unknown as { __CONVEX_URL__?: string }).__CONVEX_URL__
+        if (injected) {
+            setRuntimeUrl(injected)
+            return
+        }
         fetch('/config.json')
             .then((r) => (r.ok ? r.json() : null))
             .then((data: { convexUrl?: string } | null) => {

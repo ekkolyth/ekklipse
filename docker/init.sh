@@ -65,7 +65,14 @@ CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMI
 
 echo "Writing runtime config..."
 # So the frontend knows which Convex URL to use (works with any APP_URL/API_PORT at runtime)
-echo "{\"convexUrl\": \"${PUBLIC_CONVEX_URL:-http://localhost:3210}\"}" > dist/config.json
+CONVEX_URL="${PUBLIC_CONVEX_URL:-http://localhost:3210}"
+echo "CONVEX_URL at startup: $CONVEX_URL"
+echo "{\"convexUrl\": \"$CONVEX_URL\"}" > dist/config.json
+# Inject into convex-config.js so the URL is available before any app code runs (works with any image)
+CONVEX_URL_ESCAPED=$(printf '%s' "$CONVEX_URL" | sed 's/\\/\\\\/g; s/"/\\"/g')
+echo "window.__CONVEX_URL__=\"$CONVEX_URL_ESCAPED\";" > dist/convex-config.js
+# Cache-bust so the browser never uses a cached empty convex-config.js
+sed -i "s|__CONVEX_CONFIG_QUERY__|?v=$(date +%s)|g" dist/index.html
 
 echo "Starting frontend server..."
 # Start frontend server
