@@ -11,12 +11,13 @@ services:
         image: ${DOCKER_IMAGE:-ekkolyth/ekklipse}:${DOCKER_TAG:-dev}
         container_name: ekklipse
         ports:
-            - "${WEB_PORT:-3000}:3000" # Frontend
-            - "${API_PORT:-3210}:3210" # Convex Backend API
+            - "${WEBUI_PORT:-3000}:3000"
+            - "${API_PORT:-3210}:3210"
         volumes:
             - ekklipse-data:/convex/data
         environment:
-            - PUBLIC_CONVEX_URL=${APP_URL:-http://localhost}:${API_PORT:-3210}
+            - APP_URL=${APP_URL:-http://localhost}
+            - API_PORT=${API_PORT:-3210}
         restart: unless-stopped
 
 volumes:

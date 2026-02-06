@@ -35,28 +35,26 @@ A single Docker image contains:
 
 ## Environment Variables
 
-- **`APP_URL`** – Base URL where the app is reachable (default: `http://localhost`). Set this for local use or your server hostname/IP (e.g. `https://app.example.com`). The frontend uses it to connect to the Convex API; no rebuild needed.
-- **`WEB_PORT`** – Port for the web UI (default: 3000). Set only if you want a different frontend port.
-- **`API_PORT`** – Optional. Only set if you have a port conflict on **3210**. Default is 3210; the Convex URL is derived as `APP_URL` + `:` + `API_PORT` at runtime.
+Set these in your `.env` or shell when running compose. All have defaults; you only need to override when not using defaults.
 
-Internal / optional:
+| Variable      | Default            | Description |
+|---------------|--------------------|-------------|
+| **`APP_URL`** | `http://localhost` | Base URL where the app is reachable (e.g. your server hostname or `https://app.example.com`). |
+| **`WEBUI_PORT`** | `3000`          | Port for the web UI. |
+| **`API_PORT`**   | `3210`          | Port for the API. Only change if you have a port conflict. |
 
-- `DOCKER_IMAGE` - Docker image name (default: ekkolyth/ekklipse)
-- `DOCKER_TAG` - Docker image tag (default: dev)
-
-## Deploying to a server (WebSocket / "can't save" fix)
-
-If you run the container on a **server**, the browser must reach the Convex API at the server address. Set **APP_URL** to that address (and **WEB_PORT** if you want). No rebuild required.
+Example for a server or custom ports:
 
 ```bash
 export APP_URL=http://YOUR_SERVER_IP_OR_DOMAIN
-# Optional: export WEB_PORT=3000
+# Optional: export WEBUI_PORT=3000
+# Optional: export API_PORT=3210
 docker compose -f docker/docker-compose.example.yml up -d
 ```
 
-With a **reverse proxy** (e.g. HTTPS at a domain), set `APP_URL` to that domain (e.g. `https://app.example.com`). Set `API_PORT` only if the API is on a non-default port (e.g. `443` for HTTPS).
+With a reverse proxy (e.g. HTTPS at a domain), set `APP_URL` to that domain. Set `API_PORT` only if the API is on a non-default port (e.g. `443` for HTTPS).
 
-## Convex Functions Deployment
+## Convex Functions Deployment (advanced)
 
 Convex functions need to be deployed to the backend. After generating the admin key:
 
