@@ -64,8 +64,13 @@ cd /app
 CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMIN_KEY" npx convex deploy --yes || true
 
 echo "Writing runtime config..."
-# Derive API URL from user-facing env (APP_URL + API_PORT)
-CONVEX_URL="${APP_URL:-http://localhost}:${API_PORT:-3210}"
+# Derive API URL from user-facing env: default = host:port; custom APP_URL = path-based /api
+APP_URL="${APP_URL:-http://localhost}"
+if [ "$APP_URL" = "http://localhost" ]; then
+  CONVEX_URL="${APP_URL}:${API_PORT:-3210}"
+else
+  CONVEX_URL="${APP_URL%/}/api"
+fi
 echo "{\"convexUrl\": \"$CONVEX_URL\"}" > dist/config.json
 # Inject into convex-config.js so the URL is available before any app code runs (works with any image)
 CONVEX_URL_ESCAPED=$(printf '%s' "$CONVEX_URL" | sed 's/\\/\\\\/g; s/"/\\"/g')

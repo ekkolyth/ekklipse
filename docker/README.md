@@ -39,7 +39,7 @@ Set these in your `.env` or shell when running compose. All have defaults; you o
 
 | Variable      | Default            | Description |
 |---------------|--------------------|-------------|
-| **`APP_URL`** | `http://localhost` | Base URL where the app is reachable (e.g. your server hostname or `https://app.example.com`). |
+| **`APP_URL`** | `http://localhost` | Base URL where the app is reachable. When set to a custom URL (e.g. `https://app.example.com`), the API URL becomes `APP_URL` + `/api`; configure your reverse proxy to route `/api` accordingly. |
 | **`WEBUI_PORT`** | `3000`          | Port for the web UI. |
 | **`API_PORT`**   | `3210`          | Port for the API. Only change if you have a port conflict. |
 
@@ -52,7 +52,25 @@ export APP_URL=http://YOUR_SERVER_IP_OR_DOMAIN
 docker compose -f docker/docker-compose.example.yml up -d
 ```
 
-With a reverse proxy (e.g. HTTPS at a domain), set `APP_URL` to that domain. Set `API_PORT` only if the API is on a non-default port (e.g. `443` for HTTPS).
+With a reverse proxy (e.g. HTTPS at a domain), set `APP_URL` to that domain. The Convex URL becomes `APP_URL` + `/api` (path-based). You must configure your reverse proxy to route `/api` to the Convex backend and strip the `/api` prefix when forwarding (so the backend receives requests at `/`).
+
+### Single-URL reverse proxy
+
+When you use a custom `APP_URL` (e.g. `https://klip.kenway.me`), the app uses the path-based API URL so one host can serve both the frontend and the API. Example Caddy config:
+
+```caddy
+klip.kenway.me {
+    import cloudflare
+    handle_path /api/* {
+        reverse_proxy ekklipse:3210
+    }
+    handle {
+        reverse_proxy ekklipse:3000
+    }
+}
+```
+
+Route `/api/*` to the Convex backend (e.g. `ekklipse:3210`); route everything else to the frontend (e.g. `ekklipse:3000`). Use your Docker service name and container ports if Caddy is on the same Docker network.
 
 ## Convex Functions Deployment (advanced)
 
