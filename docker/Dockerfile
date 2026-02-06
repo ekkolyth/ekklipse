@@ -9,7 +9,6 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile || pnpm install
 
 COPY . .
-# Convex URL is APP_URL + ":" + API_PORT so the port is set in one place
 ARG APP_URL=http://localhost
 ARG API_PORT=3210
 ENV VITE_CONVEX_URL=${APP_URL}:${API_PORT}

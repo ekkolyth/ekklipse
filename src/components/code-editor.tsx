@@ -1,43 +1,51 @@
 import Editor from '@monaco-editor/react'
 
-const carbonfoxTheme = {
+/** Vercel dark theme – faithful to Next.js & Vercel docs (vscode-vercel) */
+const VERCEL_EDITOR_BG = '#0a0a0a'
+
+const vercelDarkTheme = {
     base: 'vs-dark' as const,
     inherit: true,
     rules: [
-        { token: 'comment', foreground: '6e6f70', fontStyle: 'italic' },
-        { token: 'keyword', foreground: 'ff7eb6', fontStyle: 'bold' },
-        { token: 'string', foreground: '3ddbd9' },
-        { token: 'number', foreground: 'ee5396' },
-        { token: 'type', foreground: '42be65' },
-        { token: 'class', foreground: '42be65', fontStyle: 'bold' },
-        { token: 'function', foreground: 'be95ff' },
-        { token: 'variable', foreground: 'f2f4f8' },
-        { token: 'variable.parameter', foreground: '82cfff' },
-        { token: 'operator', foreground: 'f2f4f8' },
-        { token: 'delimiter', foreground: 'f2f4f8' },
-        { token: 'constant', foreground: 'ee5396' },
-        { token: 'property', foreground: '82cfff' },
-        { token: 'tag', foreground: 'ff7eb6' },
-        { token: 'attribute.name', foreground: '42be65' },
-        { token: 'attribute.value', foreground: '3ddbd9' },
+        { token: 'comment', foreground: 'a1a1a1' },
+        { token: 'keyword', foreground: 'f05b8d' },
+        { token: 'storage', foreground: 'f05b8d' },
+        { token: 'string', foreground: '58c760' },
+        { token: 'number', foreground: '62a6ff' },
+        { token: 'constant', foreground: '62a6ff' },
+        { token: 'type', foreground: '62a6ff' },
+        { token: 'class', foreground: '62a6ff' },
+        { token: 'function', foreground: 'b675f1' },
+        { token: 'variable', foreground: 'ededed' },
+        { token: 'variable.parameter', foreground: 'ededed' },
+        { token: 'operator', foreground: 'f05b8d' },
+        { token: 'delimiter', foreground: 'ededed' },
+        { token: 'property', foreground: '62a6ff' },
+        { token: 'tag', foreground: '58c760' },
+        { token: 'attribute.name', foreground: 'b675f1' },
+        { token: 'attribute.value', foreground: '58c760' },
+        { token: 'support', foreground: 'f05b8d' },
+        { token: 'invalid', foreground: 'f05b8d' },
     ],
     colors: {
-        'editor.background': '#161616',
-        'editor.foreground': '#f2f4f8',
-        'editor.lineHighlightBackground': '#262626',
-        'editor.selectionBackground': '#3d3d3d',
-        'editor.inactiveSelectionBackground': '#2a2a2a',
-        'editorCursor.foreground': '#f2f4f8',
-        'editorWhitespace.foreground': '#525252',
-        'editorIndentGuide.background': '#393939',
-        'editorIndentGuide.activeBackground': '#525252',
-        'editor.lineNumber.foreground': '#6f6f6f',
-        'editor.lineNumber.activeForeground': '#c6c6c6',
-        'editorGutter.background': '#161616',
-        'editorBracketMatch.background': '#2a2a2a',
-        'editorBracketMatch.border': '#525252',
+        'editor.background': VERCEL_EDITOR_BG,
+        'editor.foreground': '#ededed',
+        'editor.lineHighlightBackground': '#ffffff1a',
+        'editor.selectionBackground': '#ffffff1a',
+        'editor.inactiveSelectionBackground': '#ffffff1a',
+        'editorCursor.foreground': '#ededed',
+        'editorWhitespace.foreground': '#878787',
+        'editorIndentGuide.background': '#242424',
+        'editorIndentGuide.activeBackground': '#242424',
+        'editor.lineNumber.foreground': '#878787',
+        'editor.lineNumber.activeForeground': '#a1a1a1',
+        'editorGutter.background': VERCEL_EDITOR_BG,
+        'editorBracketMatch.background': '#ffffff1a',
+        'editorBracketMatch.border': '#00000000',
     },
 }
+
+export const codeEditorBackground = VERCEL_EDITOR_BG
 
 interface CodeEditorProps {
     value: string
@@ -69,9 +77,16 @@ export function CodeEditor({
                 lineHeight: 24,
             }}
             beforeMount={(monaco) => {
-                monaco.editor.defineTheme('carbonfox', carbonfoxTheme)
+                monaco.editor.defineTheme('vercel-dark', vercelDarkTheme)
+                // Snippet-style editing: no module context, so chill TS/JS diagnostics
+                const relaxed = {
+                    noSemanticValidation: true,
+                    noSyntaxValidation: true,
+                }
+                monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions(relaxed)
+                monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(relaxed)
             }}
-            theme='carbonfox'
+            theme='vercel-dark'
         />
     )
 }

@@ -1,6 +1,6 @@
 import { MinusIcon, MoonStar, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-import { CodeEditor } from '@/components/code-editor'
+import { CodeEditor, codeEditorBackground } from '@/components/code-editor'
 import { ExpirationSelect } from '@/components/expiration-select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -58,7 +58,10 @@ export function NewKlipForm({ onSave }: NewKlipFormProps) {
                 )}
             </button>
             {showNew && (
-                <div className='flex flex-col space-y-4 border-t border-foreground/20 p-4 bg-background'>
+                <div
+                    className='flex flex-col space-y-4 border-t border-foreground/20 p-4'
+                    style={{ background: codeEditorBackground }}
+                >
                     <div className='flex flex-row gap-2'>
                         <Input
                             className='h-10 rounded-md'
@@ -90,7 +93,10 @@ export function NewKlipForm({ onSave }: NewKlipFormProps) {
                             onChange={(e) => setContent(e.target.value)}
                         />
                     ) : (
-                        <div className='h-[20vh] resize-y rounded-xl border border-foreground/20 overflow-hidden'>
+                        <div
+                            className='h-[20vh] resize-y rounded-xl border border-foreground/20 overflow-hidden'
+                            style={{ background: codeEditorBackground }}
+                        >
                             <div className='px-2 py-4 h-full'>
                                 <CodeEditor
                                     value={content}

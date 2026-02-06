@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import ReactMarkdown from 'react-markdown'
-import { CodeEditor } from '@/components/code-editor'
+import { CodeEditor, codeEditorBackground } from '@/components/code-editor'
 import { KlipActions } from '@/components/klip/actions'
 import { extMap } from '@/lib/constants'
 import type { Klip } from '@/lib/types'
@@ -76,7 +76,10 @@ function KlipContent({ klip }: { klip: Klip }) {
     }
 
     return (
-        <div className='rounded-md border border-foreground/20 overflow-hidden'>
+        <div
+            className='rounded-md border border-foreground/20 overflow-hidden'
+            style={{ background: codeEditorBackground }}
+        >
             <div className='px-2 py-4'>
                 <CodeEditor
                     value={klip.content}

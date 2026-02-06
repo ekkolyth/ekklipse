@@ -1,5 +1,5 @@
 import ReactMarkdown from 'react-markdown'
-import { CodeEditor } from '@/components/code-editor'
+import { CodeEditor, codeEditorBackground } from '@/components/code-editor'
 import { KlipActions } from '@/components/klip/actions'
 import { extMap } from '@/lib/constants'
 import type { Klip } from '@/lib/types'
@@ -47,7 +47,10 @@ export function KlipClient({ klip }: { klip: Klip }) {
                     {klip.content}
                 </pre>
             ) : (
-                <div className='rounded-2xl border border-foreground/20 overflow-hidden'>
+                <div
+                    className='rounded-2xl border border-foreground/20 overflow-hidden'
+                    style={{ background: codeEditorBackground }}
+                >
                     <CodeEditor
                         value={klip.content}
                         language={klip.language}
