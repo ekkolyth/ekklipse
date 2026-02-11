@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery } from 'convex/react'
 import { MoonStar } from 'lucide-react'
-import { useEffect } from 'react'
 import { KlipList } from '@/components/klip/list'
 import { NewKlipForm } from '@/components/klip/new-klip-form'
 import { HomeHeader } from '@/components/nav/home-header'
 import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/')({
+    head: () => ({ title: 'ekklipse' }),
     component: Home,
 })
 
@@ -15,19 +15,6 @@ function Home() {
     const klips = useQuery(api.klips.list) || []
     const createKlip = useMutation(api.klips.create)
     const deleteKlip = useMutation(api.klips.remove)
-
-    useEffect(() => {
-        document.title = 'ekklipse'
-        const metaDescription = document.querySelector(
-            'meta[name="description"]'
-        )
-        if (metaDescription) {
-            metaDescription.setAttribute(
-                'content',
-                'ekklipse is a simple pastebin app to share links, code, or other text with your friends, colleagues, or yourself on another device.'
-            )
-        }
-    }, [])
 
     const handleSave = async (data: {
         name: string

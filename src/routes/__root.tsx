@@ -1,9 +1,10 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ConvexProviderWrapper } from '@/components/providers/convex-provider'
 
 export const Route = createRootRoute({
+    head: () => ({ title: 'ekklipse' }),
     component: RootLayout,
 })
 
@@ -15,6 +16,7 @@ function RootLayout() {
                 defaultTheme='dark'
                 enableSystem={false}
             >
+                <HeadContent />
                 <div className='min-h-screen'>
                     <main>
                         <Outlet />

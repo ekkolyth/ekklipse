@@ -16,20 +16,6 @@ function KlipPage() {
     useEffect(() => {
         if (klip) {
             document.title = klip.name
-
-            // Update OG title
-            const ogTitle = document.querySelector('meta[property="og:title"]')
-            if (ogTitle) {
-                ogTitle.setAttribute('content', klip.name)
-            }
-
-            // Update Twitter title
-            const twitterTitle = document.querySelector(
-                'meta[name="twitter:title"]'
-            )
-            if (twitterTitle) {
-                twitterTitle.setAttribute('content', klip.name)
-            }
         }
     }, [klip])
 
