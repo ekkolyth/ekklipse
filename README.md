@@ -15,7 +15,7 @@ This is a [Tanstack Start](https://tanstack.com/start/latest) project built on t
 Run the development server:
 
 ```bash
-pnpm dev
+bun dev
 ```
 
 Dev Server: [http://localhost:3000](http://localhost:3000)
