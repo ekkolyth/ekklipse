@@ -31,13 +31,6 @@ docker/build:
 		-f docker/Dockerfile \
 		-t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 
-docker/tag:
-	@test -n "$(NEW_TAG)" || (echo "Usage: make docker/tag NEW_TAG=v0.1.0"; exit 1)
-	docker tag $(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_IMAGE):$(NEW_TAG)
-
-docker/push:
-	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
-
 docker/up:
 	cd docker && docker-compose up
 
@@ -64,4 +57,4 @@ docker/deploy:
 
 .PHONY: \
 	all build build-web build-db \
-	docker/build docker/tag docker/push docker/setup docker/deploy
+	docker/build docker/up docker/setup docker/deploy

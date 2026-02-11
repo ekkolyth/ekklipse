@@ -26,11 +26,16 @@ A single Docker image contains:
 - `docker-compose.yml` - Runs the single app service
 - `docker-compose.example.yml` - Example with documentation
 
-## Makefile Commands
+## Official images (CI)
 
-- `make docker/build` - Build the frontend Docker image
-- `make docker/push` - Push the Docker image to registry
-- `make docker/tag NEW_TAG=v0.1.0` - Tag the image with a new version
+Images are built by GitHub Actions:
+
+- **Push to `dev`** → always builds and pushes `ekkolyth/ekklipse:dev` (no version tag).
+- **Push to `main`** → builds only when the version in `package.json` is new; pushes `ekkolyth/ekklipse:latest` and `ekkolyth/ekklipse:<version>`. Version tags exist only for main.
+
+## Makefile commands (local development only)
+
+- `make docker/build` - Build the image for local testing (default tag `dev`)
 - `make docker/up` - Start all services with docker-compose
 
 ## Environment Variables

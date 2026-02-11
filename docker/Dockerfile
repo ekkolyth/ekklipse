@@ -18,6 +18,9 @@ RUN pnpm build
 FROM ghcr.io/get-convex/convex-backend:latest
 WORKDIR /app
 
+ARG VERSION
+LABEL org.opencontainers.image.version="${VERSION}"
+
 # Install Node.js 22 (Convex backend image doesn't include Node.js)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs && \
