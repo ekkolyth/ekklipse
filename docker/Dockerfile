@@ -20,8 +20,10 @@ WORKDIR /app
 ARG VERSION
 LABEL org.opencontainers.image.version="${VERSION}"
 
-# Install Bun (for bunx convex deploy and app deps)
-RUN curl -fsSL https://bun.sh/install | bash - && \
+# Install unzip (required by Bun install script) then Bun
+RUN apt-get update && apt-get install -y --no-install-recommends unzip ca-certificates curl && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl -fsSL https://bun.sh/install | bash - && \
     ln -s /root/.bun/bin/bun /usr/local/bin/bun
 
 # Install Convex CLI and serve globally
