@@ -52,15 +52,23 @@ export APP_URL=http://YOUR_SERVER_IP_OR_DOMAIN
 docker compose -f docker/docker-compose.example.yml up -d
 ```
 
-With a reverse proxy (e.g. HTTPS at a domain), set `APP_URL` to that domain. The Convex URL becomes `APP_URL` + `/api` (path-based). You must configure your reverse proxy to route `/api` to the Convex backend and strip the `/api` prefix when forwarding (so the backend receives requests at `/`).
+With a reverse proxy (e.g. HTTPS at a domain), set `APP_URL` to that domain. The Convex URL becomes `APP_URL` + `/api` (path-based). You must configure your reverse proxy accordingly.
 
-### Single-URL reverse proxy
+### Reverse proxy (any proxy)
 
-When you use a custom `APP_URL` (e.g. `https://klip.kenway.me`), the app uses the path-based API URL so one host can serve both the frontend and the API. Example Caddy config:
+**Routing rules (apply to Caddy, Nginx, Traefik, etc.):**
+
+- Route **/** and all paths **except** `/api` and `/api/*` to the **frontend** (container port 3000). Do not strip anything.
+- Route **/api** and **/api/** and **/api/*** to the **backend** (container port 3210). **Strip the `/api` prefix** so the backend receives paths at `/` (e.g. `/api/version` becomes `/version`).
+- If the proxy runs on the host, use `localhost:3000` and `localhost:3210`. If the proxy is in the same Docker network as the app, use `ekklipse:3000` and `ekklipse:3210`.
+
+**Caddy:**
 
 ```caddy
-klip.kenway.me {
-    import cloudflare
+your-domain.com {
+    handle_path /api {
+        reverse_proxy ekklipse:3210
+    }
     handle_path /api/* {
         reverse_proxy ekklipse:3210
     }
@@ -70,7 +78,41 @@ klip.kenway.me {
 }
 ```
 
-Route `/api/*` to the Convex backend (e.g. `ekklipse:3210`); route everything else to the frontend (e.g. `ekklipse:3000`). Use your Docker service name and container ports if Caddy is on the same Docker network.
+Both `handle_path /api` and `handle_path /api/*` are required so that requests to `/api` and `/api/...` go to the backend. Use `localhost:3210` and `localhost:3000` if Caddy runs on the host.
+
+**Nginx:**
+
+```nginx
+location /api/ {
+    proxy_pass http://ekklipse:3210/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+location /api {
+    proxy_pass http://ekklipse:3210/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+location / {
+    proxy_pass http://ekklipse:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+```
+
+Use `http://localhost:3210/` and `http://localhost:3000` if Nginx runs on the host.
+
+**Traefik:** Route path prefix `/api` to the backend (port 3210) with the path prefix stripped; route everything else to the frontend (port 3000). Exact configuration depends on your setup (labels vs IngressRoute); use a `PathPrefix` matcher for `/api` and a middleware or rule to strip the prefix before forwarding.
+
+### Verifying the setup
+
+- **Container env:** `APP_URL` should be set to your public URL (e.g. `https://your-domain.com`) when using a reverse proxy.
+- **Runtime config:** `GET /config.json` (or the `convex-config.js` script) should show `convexUrl` equal to `APP_URL` + `/api`.
+- **Frontend:** Opening your public URL loads the app (no permanent "Loading...").
+- **Backend:** Browser devtools Network tab shows successful requests to `.../api/...`, or `curl -I https://your-domain.com/api/version` returns 2xx.
 
 ## Convex Functions Deployment (advanced)
 

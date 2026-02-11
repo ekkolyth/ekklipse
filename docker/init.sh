@@ -66,10 +66,11 @@ CONVEX_SELF_HOSTED_URL=http://localhost:3210 CONVEX_SELF_HOSTED_ADMIN_KEY="$ADMI
 echo "Writing runtime config..."
 # Derive API URL from user-facing env: default = host:port; custom APP_URL = path-based /api
 APP_URL="${APP_URL:-http://localhost}"
-if [ "$APP_URL" = "http://localhost" ]; then
-  CONVEX_URL="${APP_URL}:${API_PORT:-3210}"
+APP_URL_NORMALIZED="${APP_URL%/}"
+if [ "$APP_URL_NORMALIZED" = "http://localhost" ] || [ "$APP_URL_NORMALIZED" = "http://127.0.0.1" ]; then
+  CONVEX_URL="${APP_URL_NORMALIZED}:${API_PORT:-3210}"
 else
-  CONVEX_URL="${APP_URL%/}/api"
+  CONVEX_URL="${APP_URL_NORMALIZED}/api"
 fi
 echo "{\"convexUrl\": \"$CONVEX_URL\"}" > dist/config.json
 # Inject into convex-config.js so the URL is available before any app code runs (works with any image)
@@ -79,7 +80,7 @@ echo "window.__CONVEX_URL__=\"$CONVEX_URL_ESCAPED\";" > dist/convex-config.js
 sed -i "s|__CONVEX_CONFIG_QUERY__|?v=$(date +%s)|g" dist/index.html
 
 echo "---"
-echo "Web UI:  ${APP_URL:-http://localhost}:${WEBUI_PORT:-3000}"
+echo "Web UI:  ${APP_URL_NORMALIZED}:${WEBUI_PORT:-3000}"
 echo "API:     $CONVEX_URL"
 echo "---"
 
