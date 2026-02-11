@@ -7,7 +7,7 @@ import { HomeHeader } from '@/components/nav/home-header'
 import { api } from '../../convex/_generated/api'
 
 export const Route = createFileRoute('/')({
-    head: () => ({ title: 'ekklipse' }),
+    head: () => ({ meta: [{ title: 'ekklipse' }] }),
     component: Home,
 })
 

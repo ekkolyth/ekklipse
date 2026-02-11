@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ConvexProviderWrapper } from '@/components/providers/convex-provider'
 
 export const Route = createRootRoute({
-    head: () => ({ title: 'ekklipse' }),
+    head: () => ({ meta: [{ title: 'ekklipse' }] }),
     component: RootLayout,
 })
 
