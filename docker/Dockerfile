@@ -1,7 +1,7 @@
 ARG TARGETPLATFORM=linux/amd64
 ARG BUILDPLATFORM
 
-FROM oven/bun:1-alpine AS build
+FROM --platform=$BUILDPLATFORM oven/bun:1-alpine AS build
 WORKDIR /app
 
 COPY package.json bun.lock* ./
@@ -24,7 +24,11 @@ LABEL org.opencontainers.image.version="${VERSION}"
 RUN apt-get update && apt-get install -y --no-install-recommends unzip ca-certificates curl && \
     rm -rf /var/lib/apt/lists/* && \
     curl -fsSL https://bun.sh/install | bash - && \
-    ln -s /root/.bun/bin/bun /usr/local/bin/bun
+    ln -s /root/.bun/bin/bun /usr/local/bin/bun && \
+    ln -s /root/.bun/bin/bunx /usr/local/bin/bunx
+
+# Ensure Bun's bin dir and global install bin are in PATH for bunx/serve
+ENV PATH="/root/.bun/bin:${PATH}"
 
 # Install Convex CLI and serve globally
 RUN bun install -g convex serve

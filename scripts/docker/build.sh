@@ -6,7 +6,7 @@ if [ ! -f "docker/Dockerfile" ]; then
   exit 1
 fi
 
-echo "Building single image (frontend + Convex backend)..."
+echo "Building Image (frontend + backend)..."
 docker build --platform linux/amd64 \
   --build-arg APP_URL="${APP_URL:-http://localhost}" \
   --build-arg API_PORT="${API_PORT:-3210}" \

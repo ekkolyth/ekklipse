@@ -87,4 +87,4 @@ echo "---"
 echo "Starting frontend server..."
 # Start frontend server
 # Keep Convex backend running in background
-exec serve -s dist -l 3000
+exec bunx serve -s dist -l 3000
