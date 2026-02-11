@@ -1,4 +1,28 @@
-### Reverse proxy
+# Docker setup for ekklipse
+
+One image (frontend + Convex backend). Run with miso from the project root.
+
+## Quick start
+
+```bash
+miso docker/build
+miso docker/up
+```
+
+Then open http://localhost:3000
+
+## Local Docker commands (miso)
+
+Run these from the project root:
+
+- **`miso docker/build`** – Build the image (default tag: `dev`)
+- **`miso docker/up`** – Start the stack (foreground)
+- **`miso docker/setup`** – Start stack in background, generate admin key, print deploy instructions
+- **`miso docker/deploy`** – Deploy Convex functions to the running backend (requires `CONVEX_SELF_HOSTED_ADMIN_KEY` from setup)
+
+Optional smoke tests (requires Docker): `bash scripts/docker/_smoke.sh`
+
+## Reverse proxy
 
 **Routing rules:**
 
